@@ -184,21 +184,21 @@ class TestApi(unittest.TestCase):
 
 
 def suite():
-    suiteTest = unittest.TestSuite()
-    suiteTest.addTest(TestApi("test_login"))
-    suiteTest.addTest(TestApi("test_banner"))
-    suiteTest.addTest(TestApi("test_sms_code"))
-    suiteTest.addTest(TestApi("test_address"))
-    suiteTest.addTest(TestApi("test_common_list"))
-    return suiteTest
+    suite_test = unittest.TestSuite()
+    suite_test.addTest(TestApi("test_login"))
+    suite_test.addTest(TestApi("test_banner"))
+    suite_test.addTest(TestApi("test_sms_code"))
+    suite_test.addTest(TestApi("test_address"))
+    suite_test.addTest(TestApi("test_common_list"))
+    return suite_test
 
 
 if __name__ == "__main__":
     print '__main__'
-    suiteTest = unittest.TestSuite()
-    suiteTest.addTest(suite())
+    suite_test = unittest.TestSuite()
+    suite_test.addTest(suite())
     file_path = 'C:\\1\\test_result.html'
     fp = file(file_path, 'wb')
     runner = HTMLTestRunner.HTMLTestRunner(stream=fp, title=u'测试报告标题', description=u'测试报告详情:')
-    runner.run(suiteTest)
+    runner.run(suite_test)
     fp.close()
