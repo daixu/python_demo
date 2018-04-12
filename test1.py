@@ -39,8 +39,8 @@ class DemoApi(object):
         data = {"deviceId": "289bf618-8874-4e1c-8b72-7aceb29fa9e2", "password": password,
                 "smsCode": "", "terminalType": "3", "userName": username}
 
-        jsonData = requests.post(url, headers=headers, data=json.dumps(data)).json()
-        text = json.loads(json.dumps(jsonData))
+        json_data = requests.post(url, headers=headers, data=json.dumps(data)).json()
+        text = json.loads(json.dumps(json_data))
         data = text['data']
         print 'data=', data
         token = data['token']
@@ -55,8 +55,8 @@ class DemoApi(object):
         data = {"deviceId": "289bf618-8874-4e1c-8b72-7aceb29fa9e2", "password": password,
                 "smsCode": "", "terminalType": "3", "userName": username}
 
-        jsonData = requests.post(url, headers=headers, data=json.dumps(data)).json()
-        text = json.loads(json.dumps(jsonData))
+        json_data = requests.post(url, headers=headers, data=json.dumps(data)).json()
+        text = json.loads(json.dumps(json_data))
         data = text['data']
         print 'data=', data
         user_id = data['userId']
@@ -149,8 +149,8 @@ class TestApi(unittest.TestCase):
         测试获取商户地址
         """
         password = self.app.md5_hexdigest(self.password)
-        jsonData = self.app.login(self.username, password)
-        text = json.loads(json.dumps(jsonData))
+        json_data = self.app.login(self.username, password)
+        text = json.loads(json.dumps(json_data))
         data = text['data']
         print 'data=', data
         user_id = data['userId']
@@ -168,8 +168,8 @@ class TestApi(unittest.TestCase):
         测试常用清单
         """
         password = self.app.md5_hexdigest(self.password)
-        jsonData = self.app.login(self.username, password)
-        text = json.loads(json.dumps(jsonData))
+        json_data = self.app.login(self.username, password)
+        text = json.loads(json.dumps(json_data))
         data = text['data']
         print 'data=', data
         user_id = data['userId']
