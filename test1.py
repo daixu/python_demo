@@ -2,8 +2,12 @@
 
 import hashlib
 import json
+import smtplib
 import unittest
+from email.header import Header
+from email.mime.text import MIMEText
 from urlparse import urljoin
+from email.mime.multipart import MIMEMultipart
 
 import HTMLTestRunner
 # try:
@@ -213,6 +217,28 @@ def suite():
     return suite_test
 
 
+def send_email(smtp_host, from_account, from_passwd, to_account, subject, content):
+    email_client = smtplib.SMTP(smtp_host)
+    email_client.login(from_account, from_passwd)
+    # create msg
+    msg = MIMEMultipart('related')
+    # img=MIMEImage(file('/opt/25343674.png','rb').read())
+    content = MIMEText('<b>接口测试报告<b>', 'html')
+    msg.attach(content)
+
+    attac = MIMEText(open('C:\\1\\test_result.html', 'rb').read(), 'base64', 'utf-8')
+    attac['Content-Type'] = 'application/octet-stream'
+    attac.add_header('content-disposition', 'attachment', filename='test_result.html')
+    msg.attach(attac)
+
+    # msg = MIMEText(content, 'plain', 'utf-8')
+    msg['Subject'] = Header(subject, 'utf-8')  # subject
+    msg['From'] = from_account
+    msg['To'] = to_account
+    email_client.sendmail(from_account, to_account, msg.as_string())
+    email_client.quit()
+
+
 if __name__ == "__main__":
     print '__main__'
     suite_test = unittest.TestSuite()
@@ -222,3 +248,6 @@ if __name__ == "__main__":
     runner = HTMLTestRunner.HTMLTestRunner(stream=fp, title=u'测试报告标题', description=u'测试报告详情:')
     runner.run(suite_test)
     fp.close()
+
+    # 发送email
+    send_email('smtp.126.com', 'daixu_y@126.com', 'daixu324226218', '324226218@qq.com', '测试报告', '接口测试报告')
