@@ -70,7 +70,8 @@ class DemoApi(object):
         headers = {'Content-Type': 'application/json', 'token': token}
         return requests.post(url=url, headers=headers, data={}).json()
 
-    def md5_hexdigest(self, password):
+    @staticmethod
+    def md5_hexdigest(password):
         m = hashlib.md5()  # 创建md5对象
         m.update(password)  # 生成加密串，其中password是要加密的字符串
         password = m.hexdigest()
