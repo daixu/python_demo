@@ -114,6 +114,7 @@ class TestApi(unittest.TestCase):
         cls.password = '111111'
         cls.operateType = 0
         cls.app = DemoApi(cls.base_url)
+        cls.login_response = cls.app.login(cls.username, cls.app.md5_hexdigest(cls.password))
 
     def test_login(self):
         """
@@ -129,9 +130,15 @@ class TestApi(unittest.TestCase):
         """
         测试获取banner信息
         """
-        password = self.app.md5_hexdigest(self.password)
-        token = self.app.get_token(self.username, password)
+        # password = self.app.md5_hexdigest(self.password)
+        json_data = self.login_response
+        text = json.loads(json.dumps(json_data))
+        data = text['data']
+        token = data['token']
+
+        # token = self.app.get_token(self.username, password)
         response = self.app.banner(token)
+        print 'response=', response
         assert response['result'] == 0
         assert response['msg'] == u'OK'
 
@@ -149,15 +156,21 @@ class TestApi(unittest.TestCase):
         """
         测试获取商户地址
         """
-        password = self.app.md5_hexdigest(self.password)
-        json_data = self.app.login(self.username, password)
+        # password = self.app.md5_hexdigest(self.password)
+        # json_data = self.app.login(self.username, password)
+        # text = json.loads(json.dumps(json_data))
+        # data = text['data']
+        # print 'data=', data
+        # user_id = data['userId']
+        # token = data['token']
+        # print 'userId=', user_id
+        # print 'token=', token
+
+        json_data = self.login_response
         text = json.loads(json.dumps(json_data))
         data = text['data']
-        print 'data=', data
-        user_id = data['userId']
         token = data['token']
-        print 'userId=', user_id
-        print 'token=', token
+        user_id = data['userId']
 
         response = self.app.get_address(user_id, token)
         print response
@@ -168,15 +181,21 @@ class TestApi(unittest.TestCase):
         """
         测试常用清单
         """
-        password = self.app.md5_hexdigest(self.password)
-        json_data = self.app.login(self.username, password)
+        # password = self.app.md5_hexdigest(self.password)
+        # json_data = self.app.login(self.username, password)
+        # text = json.loads(json.dumps(json_data))
+        # data = text['data']
+        # print 'data=', data
+        # user_id = data['userId']
+        # token = data['token']
+        # print 'userId=', user_id
+        # print 'token=', token
+
+        json_data = self.login_response
         text = json.loads(json.dumps(json_data))
         data = text['data']
-        print 'data=', data
-        user_id = data['userId']
         token = data['token']
-        print 'userId=', user_id
-        print 'token=', token
+        user_id = data['userId']
 
         response = self.app.get_common_list(user_id, token)
         print response
@@ -186,7 +205,7 @@ class TestApi(unittest.TestCase):
 
 def suite():
     suite_test = unittest.TestSuite()
-    suite_test.addTest(TestApi("test_login"))
+    # suite_test.addTest(TestApi("test_login"))
     suite_test.addTest(TestApi("test_banner"))
     suite_test.addTest(TestApi("test_sms_code"))
     suite_test.addTest(TestApi("test_address"))
