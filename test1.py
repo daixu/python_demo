@@ -5,9 +5,9 @@ import json
 import smtplib
 import unittest
 from email.header import Header
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from urlparse import urljoin
-from email.mime.multipart import MIMEMultipart
 
 import HTMLTestRunner
 # try:
@@ -104,6 +104,55 @@ class DemoApi(object):
         获取常用清单
         """
         url = urljoin(self.base_url, "user/commonUserGreensList")
+        headers = {'Content-Type': 'application/json', 'token': token}
+        data = {"userId": user_id}
+        return requests.post(url=url, headers=headers, data=json.dumps(data)).json()
+
+    def get_shopping_cart_list(self, user_id, token):
+        """
+        用户购物车列表
+        :param user_id:
+        :param token:
+        :return:
+        """
+        url = urljoin(self.base_url, "user/userShoppingTrolleyList")
+        headers = {'Content-Type': 'application/json', 'token': token}
+        data = {"userId": user_id}
+        return requests.post(url=url, headers=headers, data=json.dumps(data)).json()
+
+    def get_shopping_cart_total(self, user_id, token, operate_type):
+        """
+        获得用户购物车里面商品数量
+        :param user_id:
+        :param token:
+        :param operateType
+        :return:
+        """
+        url = urljoin(self.base_url, "user/userShoppingTrolleyGoodsTotal")
+        headers = {'Content-Type': 'application/json', 'token': token}
+        data = {"userId": user_id, "operateType": operate_type}
+        return requests.post(url=url, headers=headers, data=json.dumps(data)).json()
+
+    def get_check_app_version(self, token, app_type):
+        """
+        检查app更新最新版本
+        :param token:
+        :param app_type
+        :return:
+        """
+        url = urljoin(self.base_url, "user/checkNewestAppVersion")
+        headers = {'Content-Type': 'application/json', 'token': token}
+        data = {"appType": app_type}
+        return requests.post(url=url, headers=headers, data=json.dumps(data)).json()
+
+    def get_account(self, token, user_id):
+        """
+        获取美点账户信息
+        :param token:
+        :param user_id
+        :return:
+        """
+        url = urljoin(self.base_url, "user/account/getaccount")
         headers = {'Content-Type': 'application/json', 'token': token}
         data = {"userId": user_id}
         return requests.post(url=url, headers=headers, data=json.dumps(data)).json()
@@ -206,6 +255,83 @@ class TestApi(unittest.TestCase):
         assert response['result'] == 0
         assert response['msg'] == u'成功'
 
+    def test_shopping_cart_list(self):
+        """
+        测试购物车列表
+        """
+        json_data = self.login_response
+        text = json.loads(json.dumps(json_data))
+        data = text['data']
+        token = data['token']
+        user_id = data['userId']
+
+        response = self.app.get_shopping_cart_list(user_id, token)
+        print response
+        assert response['result'] == 0
+        assert response['msg'] == u'成功'
+
+    def test_shopping_cart_price(self):
+        """
+        测试获得购物车总价格
+        """
+        json_data = self.login_response
+        text = json.loads(json.dumps(json_data))
+        data = text['data']
+        token = data['token']
+        user_id = data['userId']
+        operate_type = 3
+
+        response = self.app.get_shopping_cart_total(user_id, token, operate_type)
+        print response
+        assert response['result'] == 0
+        assert response['msg'] == u'成功'
+
+    def test_shopping_cart_total(self):
+        """
+        测试用户购物车里面商品数量
+        """
+        json_data = self.login_response
+        text = json.loads(json.dumps(json_data))
+        data = text['data']
+        token = data['token']
+        user_id = data['userId']
+        operate_type = 4
+
+        response = self.app.get_shopping_cart_total(user_id, token, operate_type)
+        print response
+        assert response['result'] == 0
+        assert response['msg'] == u'成功'
+
+    def test_check_app_version(self):
+        """
+        测试用户购物车里面商品数量
+        """
+        json_data = self.login_response
+        text = json.loads(json.dumps(json_data))
+        data = text['data']
+        token = data['token']
+        app_type = 1
+
+        response = self.app.get_check_app_version(token, app_type)
+        print response
+        assert response['result'] == 0
+        assert response['msg'] == u'成功'
+
+    def test_get_account(self):
+        """
+        测试获取美点账户信息
+        """
+        json_data = self.login_response
+        text = json.loads(json.dumps(json_data))
+        data = text['data']
+        user_id = data['userId']
+        token = data['token']
+
+        response = self.app.get_account(token, user_id)
+        print response
+        assert response['result'] == 0
+        assert response['msg'] == u'成功'
+
 
 def suite():
     suite_test = unittest.TestSuite()
@@ -214,16 +340,21 @@ def suite():
     suite_test.addTest(TestApi("test_sms_code"))
     suite_test.addTest(TestApi("test_address"))
     suite_test.addTest(TestApi("test_common_list"))
+    suite_test.addTest(TestApi("test_shopping_cart_list"))
+    suite_test.addTest(TestApi("test_shopping_cart_total"))
+    suite_test.addTest(TestApi("test_shopping_cart_price"))
+    suite_test.addTest(TestApi("test_check_app_version"))
+    suite_test.addTest(TestApi("test_get_account"))
     return suite_test
 
 
-def send_email(smtp_host, from_account, from_passwd, to_account, subject, content):
-    email_client = smtplib.SMTP(smtp_host)
+def send_email(host, from_account, from_passwd, to_account, subject, content):
+    email_client = smtplib.SMTP(host)
     email_client.login(from_account, from_passwd)
     # create msg
     msg = MIMEMultipart('related')
     # img=MIMEImage(file('/opt/25343674.png','rb').read())
-    content = MIMEText('<b>接口测试报告<b>', 'html')
+    content = MIMEText('<b>' + content + '<b>', 'html')
     msg.attach(content)
 
     attac = MIMEText(open('C:\\1\\test_result.html', 'rb').read(), 'base64', 'utf-8')
@@ -250,4 +381,4 @@ if __name__ == "__main__":
     fp.close()
 
     # 发送email
-    send_email('smtp.126.com', 'daixu_y@126.com', 'daixu324226218', '324226218@qq.com', '测试报告', '接口测试报告')
+    # send_email('smtp.126.com', 'daixu_y@126.com', 'daixu324226218', '324226218@qq.com', '测试报告', '接口测试报告')
